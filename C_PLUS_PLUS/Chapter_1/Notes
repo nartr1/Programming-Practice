@@ -1,0 +1,110 @@
+For disabling of the "Treat as errors the warnings demanded by strict ISO C and ISO C++"
+  Add the -pedantic-errors flag when compiling
+
+To add extra warnings when compiling:
+  Add these flags when compiling: -Wall -Weffc++ -Wextra -Wsign-conversion
+
+To treat all warnings as errors:
+  -Werror
+
+To set a language standard, use the flag:
+   -std=c++11, -std=c++14, -std=c++17, or -std=c++2a
+to enable C++11/14/17/2a support respectively.
+
+Direct initialization of variables:
+  int width( 5 ); //Sets the width to 5 within width's instantiation, faster than copy initialization in most cases
+
+Parenthesis based initialization doesn't work in all cases (Different data types) so we can also use:
+  int width{ 5 };
+  //OR
+  int width{}; //Sets to 0 with direct initialization, only use if value is going 5to be replaced immediately
+  //ALSO you can use it to make sure a piece of data will fit into your selected data type at compile time
+  int width{ 4.5 }; // error: not all double values fit into an int
+
+
+C++ Keywords available:
+    alignas (C++11)
+    alignof (C++11)
+    and
+    and_eq
+    asm
+    auto
+    bitand
+    bitor
+    bool
+    break
+    case
+    catch
+    char
+    char16_t (C++11)
+    char32_t (C++11)
+    class
+    compl
+    const
+    constexpr (C++11)
+    const_cast
+    continue
+    decltype (C++11)
+    default
+    delete
+    do
+    double
+    dynamic_cast
+    else
+    enum
+    explicit
+    export
+    extern
+    false
+    float
+    for
+    friend
+    goto
+    if
+    inline
+    int
+    long
+    mutable
+    namespace
+    new
+    noexcept (C++11)
+    not
+    not_eq
+    nullptr (C++11)
+    operator
+    or
+    or_eq
+    private
+    protected
+    public
+    register
+    reinterpret_cast
+    return
+    short
+    signed
+    sizeof
+    static
+    static_assert (C++11)
+    static_cast
+    struct
+    switch
+    template
+    this
+    thread_local (C++11)
+    throw
+    true
+    try
+    typedef
+    typeid
+    typename
+    union
+    unsigned
+    using
+    virtual
+    void
+    volatile
+    wchar_t
+    while
+    xor
+    xor_eq
+
