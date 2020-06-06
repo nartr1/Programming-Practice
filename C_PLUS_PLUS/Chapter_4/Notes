@@ -1,0 +1,203 @@
+Fundamental data types:
+Types 	Category 	Meaning 	Example
+
+float
+
+double
+
+long double 	Floating Point 	a number with a fractional part 	3.14159
+________________________________________________________________________
+bool 	Integral (Boolean) 	true or false 	true
+________________________________________________________________________
+char
+
+wchar_t
+
+char8_t (C++20)
+
+char16_t (C++11)
+
+char32_t (C++11) 	Integral (Character) 	a single character of text 	‘c’
+________________________________________________________________________
+short
+
+int
+
+long
+
+long long (C++11) 	Integral (Integer) 	positive and negative whole numbers, including 0 	64
+_______________________________________________________________________
+std::nullptr_t (C++11) 	Null Pointer 	a null pointer 	nullptr
+_______________________________________________________________________
+void 	Void 	no type
+
+An object with n bits (where n is an integer) can hold 2^n (2 to the power of n, also commonly written 2^n) unique values. Therefore, with an 8-bit byte, a byte-sized object can hold 2^8 (256) different values. An object that uses 2 bytes can hold 2^16 (65536) different values!
+
+
+Data Sizes:
+Category 	Type 	Minimum Size 	Note
+
+boolean
+bool 	1 byte
+
+character
+char 	1 byte 	Always exactly 1 byte
+
+wchar_t 	1 byte
+
+char16_t 	2 bytes 	C++11 type
+
+char32_t 	4 bytes 	C++11 type
+
+
+integer
+short 	2 bytes
+
+int 	2 bytes
+
+long 	4 bytes
+
+long long 	8 bytes 	C99/C++11 type
+
+floating point 	float 	4 bytes
+
+double 	8 bytes
+
+long double 	8 bytes
+
+
+A test to see the sizes of different data types in action:
+
+#include <iostream>
+
+int main(){
+    std::cout << "bool:\t\t" << sizeof(bool) << " bytes\n";
+    std::cout << "char:\t\t" << sizeof(char) << " bytes\n";
+    std::cout << "wchar_t:\t" << sizeof(wchar_t) << " bytes\n";
+    std::cout << "char16_t:\t" << sizeof(char16_t) << " bytes\n"; // C++11 only
+    std::cout << "char32_t:\t" << sizeof(char32_t) << " bytes\n"; // C++11 only
+    std::cout << "short:\t\t" << sizeof(short) << " bytes\n";
+    std::cout << "int:\t\t" << sizeof(int) << " bytes\n";
+    std::cout << "long:\t\t" << sizeof(long) << " bytes\n";
+    std::cout << "long long:\t" << sizeof(long long) << " bytes\n"; // C++11 only
+    std::cout << "float:\t\t" << sizeof(float) << " bytes\n";
+    std::cout << "double:\t\t" << sizeof(double) << " bytes\n";
+    std::cout << "long double:\t" << sizeof(long double) << " bytes\n";
+    return 0;
+}
+
+
+Signed vs. Unsigned integer ranges:
+1 byte signed 	-128 to 127
+
+2 byte signed 	-32,768 to 32,767
+
+4 byte signed 	-2,147,483,648 to 2,147,483,647
+
+8 byte signed 	-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+
+1 byte unsigned 	0 to 255
+
+2 byte unsigned 	0 to 65,535
+
+4 byte unsigned 	0 to 4,294,967,295
+
+8 byte unsigned 	0 to 18,446,744,073,709,551,615
+
+
+What happens if we try to store the number 280 (which requires 9 bits to represent) in a 1-byte unsigned integer? You might think the answer is “overflow!”. But, it’s not.
+
+By definition, unsigned integers cannot overflow. Instead, if a value is out of range, it is divided by one greater than the largest number of the type, and only the remainder kept.
+
+The number 280 is too big to fit in our 1-byte range of 0 to 255. 1 greater than the largest number of the type is 256. Therefore, we divide 280 by 256, getting 1 remainder 24. The remainder of 24 is what is stored.
+
+Any number bigger than the largest number representable by the type simply “wraps around” (sometimes called “modulo wrapping”). 255 is in range of a 1-byte integer, so 255 is fine. 256, however, is outside the range, so it wraps around to the value 0. 257 wraps around to the value 1. 280 wraps around to the value 24.
+
+
+The stdint.h header file contains type definitions for fixed width integers:
+
+std::int8_t 	1 byte signed 	-128 to 127 	Treated like a signed char on many systems. See note below.
+std::uint8_t 	1 byte unsigned 	0 to 255 	Treated like an unsigned char on many systems. See note below.
+std::int16_t 	2 byte signed 	-32,768 to 32,767
+std::uint16_t 	2 byte unsigned 	0 to 65,535
+std::int32_t 	4 byte signed 	-2,147,483,648 to 2,147,483,647
+std::uint32_t 	4 byte unsigned 	0 to 4,294,967,295
+std::int64_t 	8 byte signed 	-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+std::uint64_t 	8 byte unsigned 	0 to 18,446,744,073,709,551,615
+
+C++ officially adopted these fixed-width integers as part of C++11. They can be accessed by including the cstdint header, where they are defined inside the std namespace.
+
+
+Fast and least integers
+
+  C++ also defines two alternative sets of integers.
+
+  The fast type (std::int_fast#_t) provides the fastest signed integer type with a width of at least # bits (where # = 8, 16, 32, or 64). For example, std::int_fast32_t will give you the fastest signed integer type that’s at least 32 bits.
+
+  The least type (std::int_least#_t) provides the smallest signed integer type with a width of at least # bits (where # = 8, 16, 32, or 64). For example, std::int_least32_t will give you the smallest signed integer type that’s at least 32 bits.
+
+There is also an unsigned set of fast and least types (std::uint_fast#_t and std::uint_least#_t).
+
+
+For simplicity, it’s best to avoid std::int8_t and std::uint8_t (and the related fast and least types) altogether (use std::int16_t or std::uint16_t instead). However, if you do use std::int8_t or std::uint8_t, you should be careful of anything that would interpret std::int8_t or std::uint8_t as a char instead of an integer (this includes std::cout and std::cin).
+
+Scientific notation:
+
+  Start with: 42030
+  Slide decimal left 4 spaces: 4.2030e4
+  No leading zeros to trim: 4.2030e4
+  Trim trailing zeros: 4.203e4 (4 significant digits)
+
+  Start with: 0.0078900
+  Slide decimal right 3 spaces: 0007.8900e-3
+  Trim leading zeros: 7.8900e-3
+  Don't trim trailing zeros: 7.8900e-3 (5 significant digits)
+
+  Start with: 600.410
+  Slide decimal left 2 spaces: 6.00410e2
+  No leading zeros to trim: 6.00410e2
+  Don't trim trailing zeros: 6.00410e2 (6 significant digits)
+
+
+Setting output precision:
+  std::cout << std::setprecision(NUMBER);
+  std::cout << floating_point_number;
+
+Characters:
+char ch{5}; // initialize with integer 5 (stored as integer 5)
+char ch{'5'}; // initialize with code point for '5' (stored as integer 53)
+
+Type casting:
+static_cast<new_type>(expression)
+
+
+Escape sequences:
+  Alert 	        \a 	Makes an alert, such as a beep
+  Backspace 	    \b 	Moves the cursor back one space
+  Formfeed 	      \f 	Moves the cursor to next logical page
+  Newline 	      \n 	Moves cursor to next line
+  Carriage return \r 	Moves cursor to beginning of line
+  Horizontal tab 	\t 	Prints a horizontal tab
+  Vertical tab 	  \v 	Prints a vertical tab
+  Single quote 	  \’ 	Prints a single quote
+  Double quote 	  \” 	Prints a double quote
+  Backslash 	    \\ 	Prints a backslash.
+  Octal number 	  \(number) 	Translates into char represented by octal
+  Hex number 	    \x(number) 	Translates into char represented by hex number
+
+
+Tip: Don’t use magic numbers in your code. Trust me, unless you have insane levels of commenting you will forget what they represent
+
+Constants:
+
+Runtime constants are those whose initialization values can only be resolved at runtime (when your program is running). Variables such as usersAge and myValue in the snippets above are runtime constants, because the compiler can’t determine their initial values at compile time. usersAge relies on user input (which can only be given at runtime) and myValue depends on the value passed into the function (which is only known at runtime). However, once initialized, the value of these constants can’t be changed.
+
+Compile-time constants are those whose initialization values can be resolved at compile-time (when your program is compiling). Variable gravity above is an example of a compile-time constant. Compile-time constants enable the compiler to perform optimizations that aren’t available with runtime constants. For example, whenever gravity is used, the compiler can simply substitute the identifier gravity with the literal double 9.8.
+
+Any variable that should not be modifiable after initialization and whose initializer is known at compile-time should be declared as constexpr.
+
+Any variable that should not be modifiable after initialization and whose initializer is not known at compile-time should be declared as const.
+
+
+Use constexpr variables to provide a name and context for your magic numbers rather than macro defines.
+
