@@ -1,0 +1,57 @@
+Increment/Decrement operators:
+
+Operator 	Symbol 	Form 	Operation
+
+Prefix increment (pre-increment) 	++ 	++x 	Increment x, then return x
+
+Prefix decrement (pre-decrement) 	–– 	––x 	Decrement x, then return x
+
+Postfix increment (post-increment) 	++ 	x++ 	Copy x, then increment x, then return the copy
+
+Postfix decrement (post-decrement) 	–– 	x–– 	Copy x, then decrement x, then return the copy
+
+The ?: operator takes the following form:
+  (condition) ? expression1 : expression2;
+
+Only use the conditional operator for simple conditionals where you use the result and where it enhances readability.
+
+
+Relational operators:
+
+Operator 	Symbol 	Form 	Operation
+
+Greater than 	> 	x > y 	true if x is greater than y, false otherwise
+
+Less than 	< 	x < y 	true if x is less than y, false otherwise
+
+Greater than or equals 	>= 	x >= y 	true if x is greater than or equal to y, false otherwise
+
+Less than or equals 	<= 	x <= y 	true if x is less than or equal to y, false otherwise
+
+Equality 	== 	x == y 	true if x equals y, false otherwise
+
+Inequality 	!= 	x != y 	true if x does not equal y, false otherwise
+
+
+Warning: Avoid using operator== and operator!= with floating point operands. (due to the rounding errors that occur)
+
+Use functions such as this to remedy the float comparisons:
+  bool approximatelyEqual(double a, double b, double epsilon){
+    return (std::abs(a - b) <= (std::max(std::abs(a), std::abs(b)) * epsilon));
+  }
+
+Usage:
+  if(!approximatelyEqual(a, b, 0.001))
+    std::cout << a << " is not equal to " << b << '\n';
+
+Warning: Short circuit evaluation may cause Logical OR and Logical AND to not evaluate one operand. Avoid using expressions with side effects in conjunction with these operators.
+
+When mixing logical AND and logical OR in a single expression, explicitly parenthesize each operation to ensure they evaluate how you intend.
+
+De Morgan's Law:
+!(x && y) is equivalent to !x || !y
+!(x || y) is equivalent to !x && !y
+
+Lack of a logical XOR operator:
+if (a != b) ... // a XOR b, assuming a and b are Booleans
+
