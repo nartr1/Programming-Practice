@@ -1,0 +1,3 @@
+g++ -std=c++17 -o header_example main.cpp add.cpp
+
+Need to include both cpp files when compiling, but the header can be left out unless it is in another directory, then specify with the -I/path/to/headers/directory option when compiling

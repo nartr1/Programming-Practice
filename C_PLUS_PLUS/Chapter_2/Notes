@@ -1,0 +1,17 @@
+For functions that use other function calls as parameters:
+   someFunction(a(), b()); // a() or b() may be called first
+
+   int avar{ a() }; // a() will always be called first
+   int bvar{ b() }; // b() will always be called second
+
+   someFunction(avar, bvar); // it doesn't matter whether avar or bvar are copied first because they are just values
+
+The second method is preferred
+
+Scoping, when is a variable destroyed?
+   Local variables are destroyed in the opposite order of creation at the end of the set of curly braces in which it is defined
+
+String processing:
+  std::cout << "Hello "
+
+     "world!"; // prints "Hello world!", when string literals are just seperated by whitespace they will be concatenated together
