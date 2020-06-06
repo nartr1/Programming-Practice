@@ -157,3 +157,32 @@ A joke
 What’s the best naming prefix for a global variable?
 Answer: //
 C++ jokes are the best.
+
+
+Variable scope and linkage summary:
+
+Type 	Example 	Scope 	Duration 	Linkage 	Notes
+Local variable 	int x; 	Block 	Automatic 	None 	
+Static local variable 	static int s_x; 	Block 	Static 	None 	
+Dynamic variable 	int *x { new int{} }; 	Block 	Dynamic 	None 	
+Function parameter 	void foo(int x) 	Block 	Automatic 	None 	
+External non-constant global variable 	int g_x; 	File 	Static 	External 	Initialized or uninitialized
+Internal non-constant global variable 	static int g_x; 	File 	Static 	Internal 	Initialized or uninitialize
+Internal constant global variable 	constexpr int g_x { 1 }; 	File 	Static 	Internal 	Must be initialized
+External constant global variable 	extern constexpr int g_x { 1 }; 	File 	Static 	External 	Must be initialized
+Inline constant global variable 	inline constexpr int g_x { 1 }; 	File 	Static 	External 	Must be initialized
+Internal constant global variable 	const int g_x { 1 }; 	File 	Static 	Internal 	Must be initialized
+External constant global variable 	extern const int g_x { 1 }; 	File 	Static 	External 	Must be initialized at definition
+Inline constant global variable 	inline const int g_x { 1 }; 	File 	Static 	External 	Must be initialized
+
+
+Forward Declaration Summary:
+
+Type 	Example 	Notes
+Function forward declaration 	void foo(int x); 	Prototype only, no function body
+Non-constant global variable forward declaration 	extern int g_x; 	Must be uninitialized
+Const global variable forward declaration 	extern const int g_x; 	Must be uninitialized
+Constexpr global variable forward declaration 	extern constexpr int g_x; 	Not allowed, constexpr cannot be forward declared
+
+
+Warning: Avoid using C-style casts.
