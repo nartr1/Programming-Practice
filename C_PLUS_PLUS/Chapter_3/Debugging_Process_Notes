@@ -1,0 +1,51 @@
+Break your bugs down into these steps:
+
+  1. Find the root cause
+  2. Understand the problem
+  3. Determine a fix
+  4. Repair the issue
+  5. Retest
+
+Finding problems by running the program:
+
+  1. Figure out how to reproduce the problem
+  2. Run the program and gather information to narrow down where the problem is
+  3. Repeat the prior step until you find the problem
+
+Use the hi-lo analogy to try and pinpoint bugs:
+  You: 5
+  Me: Too low
+  You: 8
+  Me: Too high
+  You: 6
+  Me: Too low
+  You: 7
+  Me: Correct
+
+std::cerr is unbuffered, anything sent to it will print out immediately. Useful for debugging
+
+Debugging tactics:
+  1. Commenting out code
+  2. Validating Code Flow (Print statements within function calls to ensure execution is occuring)
+  3. Printing values (Of variables)
+  4. Conditionalize debug statements (#ifdef DEBUG_ON cout<<"Debug stuff";)
+  5. Logging (Plog header/library has to be installed for this, or just create a definition to open a file and write out the error message to it):
+      #include <plog/Log.h>
+      plog::init(plog::debug, "Logfile.txt");
+      LOGD << "getUserInput() called";
+      
+    To turn off logging:
+      plog::init(plog::none , "Logfile.txt");
+  6. Use a debugger (Not recommended for a beginner, however debuggers are extremely powerful in their implementation)
+
+Ways to avoid making errors in the first place:
+  1. Follow best practices
+  2. !!!!Don’t program when tired!!!!
+  3. Understand where the common pitfalls are in a language (all those things we warn you not to do)
+  4. Keep your programs simple
+  5. Don’t let your functions get too long
+  6. Prefer using the standard library to writing your own code, when possible.
+  7. Comment liberally.
+  8. Use defensive programming (Assume the user is an idiot)
+  9. Test your functions against everything (including the kitchen sink)
+  
