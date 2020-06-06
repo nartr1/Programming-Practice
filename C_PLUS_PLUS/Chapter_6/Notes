@@ -1,0 +1,159 @@
+Namespaces can span several files.
+
+As long as they have the same name for the namespace, the blocks can be anywhere
+
+Do not add custom functionality to the std namespace.
+
+Nesting Namespaces (Oh god why):
+#include <iostream>
+
+namespace foo
+{
+  namespace goo // goo is a namespace inside the foo namespace
+  {
+    int add(int x, int y)
+    {
+      return x + y;
+    }
+  }
+}
+
+int main(){
+
+    std::cout << foo::goo::add(1, 2) << '\n';
+return 0;
+}
+
+OR for C++17 syntax:
+
+#include <iostream>
+
+
+namespace foo::goo // goo is a namespace inside the foo namespace (C++17 style)
+{
+    int add(int x, int y)
+    {
+      return x + y;
+    }
+}
+
+int main(){
+    std::cout << foo::goo::add(1, 2) << '\n';
+    return 0;
+}
+
+
+Namespace alias(For when the names are way too long):
+  namespace boo = foo::goo; // boo now refers to foo::goo
+
+
+When you should use namespaces:
+In applications, namespaces can be used to separate application-specific code from code that might be reusable later (e.g. math functions). For example, physical and math functions could go into one namespace (e.g. math::). Language and localization functions in another (e.g. lang::).
+
+When you write a library or code that you want to distribute to others, always place your code inside a namespace. The code your library is used in may not follow best practices -- in such a case, if your library’s declarations aren’t in a namespace, there’s an elevated chance for naming conflicts to occur. As an additional advantage, placing library code inside a namespace also allows the user to see the contents of your library by using their editor’s auto-complete and suggestion feature.
+
+
+Variable names must be unique within a given scope, otherwise any reference to the name will be ambiguous.
+
+Local variables can be defined inside nested blocks. This works identically to local variables in function body blocks
+Note that nested blocks are considered part of the scope of the outer block in which they are defined. Consequently, variables defined in the outer block can be seen inside a nested block
+
+Define variables in the most limited existing scope. Avoid creating new blocks whose only purpose is to limit the scope of variables.
+
+
+Global variables are created when the program starts, and destroyed when it ends. This is called static duration. Variables with static duration are sometimes called static variables.
+
+Each block defines its own scope region. So what happens when we have a variable inside a nested block that has the same name as a variable in an outer block? When this happens, the nested variable “hides” the outer variable in areas where they are both in scope. This is called name hiding or shadowing.
+
+However, because global variables are part of the global namespace, we can use the scope operator (::) with no prefix to tell the compiler we mean the global variable instead of the local variable.
+
+Best practice: Avoid variable shadowing.
+
+
+An identifier with internal linkage can be seen and used within a single file, but it is not accessible from other files (that is, it is not exposed to the linker). This means that if two files have identically named identifiers with internal linkage, those identifiers will be treated as independent.
+
+To make a non-constant global variable internal, we use the static keyword.
+
+
+// Internal global variables definitions:
+static int g_x;          // defines non-initialized internal global variable (zero initialized by default)
+static int g_x{ 1 };     // defines initialized internal global variable
+const int g_y { 2 };     // defines initialized internal global const variable
+constexpr int g_y { 3 }; // defines initialized internal global constexpr variable
+// Internal function definitions:
+static int foo() {};     // defines internal function
+
+int g_x { 2 }; // non-constant globals are external by default
+extern const int g_y { 3 }; // const globals can be defined as extern, making them external
+extern constexpr int g_z { 3 }; // constexpr globals can be defined as extern, making them external (but this is useless, see the note in the next section)
+
+
+Note that the extern keyword has different meanings in different contexts. In some contexts, extern means “give this variable external linkage”. In other contexts, extern means “this is a forward declaration for an external variable that is defined somewhere else”.
+
+Warings:
+If you want to define an uninitialized non-const global variable, do not use the extern keyword, otherwise C++ will think you’re trying to make a forward declaration for the variable.
+
+Although constexpr variables can be given external linkage via the extern keyword, they can not be forward declared, so there is no value in giving them external linkage.
+
+
+Note that function forward declarations don’t need the extern keyword -- the compiler is able to tell whether you’re defining a new function or making a forward declaration based on whether you supply a function body or not. Variables forward declarations do need the extern keyword to help differentiate variables definitions from variable forward declarations (they look otherwise identical)
+
+
+
+Initialization of global variables happens as part of program startup, before execution of the main function. This proceeds in two phases.
+
+The first phase is called static initialization. In the static initialization phase, global variables with constexpr initializers (including literals) are initialized to those values. Also, global variables without initializers are zero-initialized.
+
+The second phase is called dynamic initialization. This phase is more complex and nuanced, but the gist of it is that global variables with non-constexpr initializers are initialized.
+
+
+Much more of a problem, the order of initialization across different files is not defined. Given two files, a.cpp and b.cpp, either could have its global variables initialized first. This means that if the variables in a.cpp are dependent upon the values in b.cpp, there’s a 50% chance that those variables won’t be initialized yet.
+
+
+DO NOT: Dynamic initialization of global variables causes a lot of problems in C++. Avoid it whenever possible
+
+Global constants as internal variables:
+1) Create a header file to hold these constants
+2) Inside this header file, define a namespace (discussed in lesson 6.2 -- User-defined namespaces)
+3) Add all your constants inside the namespace (make sure they’re constexpr)
+4) #include the header file wherever you need it
+
+Then use the scope resolution operator (::) with the namespace name to the left, and your variable name to the right in order to access your constants in .cpp files
+
+While this is simple (and fine for smaller programs), every time constants.h gets #included into a different code file, each of these variables is copied into the including code file. Therefore, if constants.h gets included into 20 different code files, each of these variables is duplicated 20 times. Header guards won’t stop this from happening, as they only prevent a header from being included more than once into a single including file, not from being included one time into multiple different code files. This introduces two challenges:
+
+1) Changing a single constant value would require recompiling every file that includes the constants header, which can lead to lengthy rebuild times for larger projects.
+
+2) If the constants are large in size and can’t be optimized away, this can use a lot of memory.
+
+One way to avoid these problems is by turning these constants into external variables, since we can then have
+a single variable (initialized once) that is shared across all files. In this method, we’ll define the constants in a .cpp file (to ensure the definitions only exist in one place), and put forward declarations in the header (which will be included by other files).
+
+
+Global variables make your program less modular and less flexible. A function that utilizes nothing but its parameters and has no side effects is perfectly modular. Modularity helps both in understanding what a program does, as well as with reusability. Global variables reduce modularity significantly.
+
+Instead of this:
+
+constexpr double gravity { 9.8 }; // unclear if this is a local or global variable from the name
+int main(){
+  return 0;
+}
+
+Do this:
+
+namespace constants
+{
+  constexpr double gravity { 9.8 };
+}
+int main(){
+  return 0;
+}
+
+Second, instead of allowing direct access to the global variable, it’s a better practice to “encapsulate” the variable. First, make sure the variable can only be accessed from within the file it’s declared in, eg. by making the variable static or const. Second, provide external global “access functions” to work with the variable. These functions can ensure proper usage is maintained (e.g. do input validation, range checking, etc…). Also, if you ever decide to change the underlying implementation (e.g. move from one database to another), you only have to update the access functions instead of every piece of code that uses the global variable directly.
+
+
+A joke
+
+What’s the best naming prefix for a global variable?
+Answer: //
+C++ jokes are the best.

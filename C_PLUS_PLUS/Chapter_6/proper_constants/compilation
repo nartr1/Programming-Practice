@@ -1,0 +1,1 @@
+Need to use the -std=c++17 flag to enable the use of inline constexpr
